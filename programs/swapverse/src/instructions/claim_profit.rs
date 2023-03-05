@@ -1,5 +1,4 @@
 use std::cmp::min;
-use std::mem::size_of;
 
 use crate::constants::*;
 use crate::error::SwapverseError;
@@ -95,11 +94,9 @@ pub struct ClaimProfit<'info> {
     pub investor_pool_share_token_account: Box<Account<'info, TokenAccount>>,
 
     #[account(
-        init_if_needed,
-        payer = investor,
+        mut,
         seeds = [swap_pool.key().as_ref(), investor.key().as_ref()],
         bump,
-        space = size_of::<InvestorPoolInfo>() + 8,
     )]
     pub investor_pool_info: Account<'info, InvestorPoolInfo>,
 

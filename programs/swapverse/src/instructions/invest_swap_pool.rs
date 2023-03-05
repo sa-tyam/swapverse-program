@@ -1,9 +1,10 @@
 use std::cmp::min;
+use std::mem::size_of;
 
 use crate::constants::*;
 use crate::error::SwapverseError;
 use crate::spl_token_utils::{transfer_tokens, mint_frozen_tokens};
-use crate::states::{SwapPool, GlobalState};
+use crate::states::{SwapPool, GlobalState, InvestorPoolInfo};
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 use anchor_spl::associated_token::AssociatedToken;
@@ -75,6 +76,15 @@ pub struct InvestSwapPool<'info> {
     )]
     pub investor_pool_share_token_account: Box<Account<'info, TokenAccount>>,
 
+    #[account(
+        init_if_needed,
+        payer = investor,
+        seeds = [swap_pool.key().as_ref(), investor.key().as_ref()],
+        bump,
+        space = size_of::<InvestorPoolInfo>() + 8,
+    )]
+    pub investor_pool_info: Account<'info, InvestorPoolInfo>,
+
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
@@ -109,6 +119,9 @@ impl<'info> InvestSwapPool<'info> {
         } else {
             self.swap_pool.token_b_amount_to_be_distributed = self.swap_pool.token_b_amount_to_be_distributed.checked_add(deposit_amount).unwrap();
         }
+
+        self.investor_pool_info.investor = self.investor.to_account_info().key();
+        self.investor_pool_info.swap_pool = self.swap_pool.to_account_info().key();
 
         transfer_tokens(
             deposit_amount,

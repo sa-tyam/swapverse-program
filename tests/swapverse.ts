@@ -450,6 +450,20 @@ describe("swapverse", () => {
       );
     swap_pool_usdt_ata = swap_pool_usdt_ata_add;
 
+    let [investor1_pool_info_add, investor1_pool_info_b] =
+      await anchor.web3.PublicKey.findProgramAddress(
+        [swap_pool.toBuffer(), investor1.publicKey.toBuffer()],
+        program.programId
+      );
+    investor1_pool_info = investor1_pool_info_add;
+
+    let [investor2_pool_info_add, investor2_pool_info_b] =
+      await anchor.web3.PublicKey.findProgramAddress(
+        [swap_pool.toBuffer(), investor2.publicKey.toBuffer()],
+        program.programId
+      );
+    investor2_pool_info = investor2_pool_info_add;
+
     let amount = new BN(70_000);
     let tx = await program.methods
       .investSwapPool(amount)
@@ -463,6 +477,7 @@ describe("swapverse", () => {
         investorTokenAccount: investor1_usdc_ata.address,
         poolShareTokenMint: pool_share_token_a_mint,
         investorPoolShareTokenAccount: investor1_pool_share_token_a_ata.address,
+        investorPoolInfo: investor1_pool_info,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
@@ -484,6 +499,7 @@ describe("swapverse", () => {
         investorTokenAccount: investor2_usdc_ata.address,
         poolShareTokenMint: pool_share_token_a_mint,
         investorPoolShareTokenAccount: investor2_pool_share_token_a_ata.address,
+        investorPoolInfo: investor2_pool_info,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
@@ -505,6 +521,7 @@ describe("swapverse", () => {
         investorTokenAccount: investor1_usdt_ata.address,
         poolShareTokenMint: pool_share_token_b_mint,
         investorPoolShareTokenAccount: investor1_pool_share_token_b_ata.address,
+        investorPoolInfo: investor1_pool_info,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
@@ -526,6 +543,7 @@ describe("swapverse", () => {
         investorTokenAccount: investor2_usdt_ata.address,
         poolShareTokenMint: pool_share_token_b_mint,
         investorPoolShareTokenAccount: investor2_pool_share_token_b_ata.address,
+        investorPoolInfo: investor2_pool_info,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
@@ -656,20 +674,6 @@ describe("swapverse", () => {
   });
 
   it("claims profit", async () => {
-    let [investor1_pool_info_add, investor1_pool_info_b] =
-      await anchor.web3.PublicKey.findProgramAddress(
-        [swap_pool.toBuffer(), investor1.publicKey.toBuffer()],
-        program.programId
-      );
-    investor1_pool_info = investor1_pool_info_add;
-
-    let [investor2_pool_info_add, investor2_pool_info_b] =
-      await anchor.web3.PublicKey.findProgramAddress(
-        [swap_pool.toBuffer(), investor2.publicKey.toBuffer()],
-        program.programId
-      );
-    investor2_pool_info = investor2_pool_info_add;
-
     let amount = new BN(5_000);
     let tx = await program.methods
       .claimProfit(amount)
