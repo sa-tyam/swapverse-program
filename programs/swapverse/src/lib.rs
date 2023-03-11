@@ -48,8 +48,8 @@ pub mod swapverse {
         ctx.accounts.invest_swap_pool(amount)
     }
 
-    pub fn withdraw_swap_pool(ctx: Context<WithdrawSwapPool>, amount: u64) -> Result<()> {
-        ctx.accounts.withdraw_swap_pool(amount)
+    pub fn withdraw_swap_pool(ctx: Context<WithdrawSwapPool>, is_token_a: bool) -> Result<()> {
+        ctx.accounts.withdraw_swap_pool(is_token_a)
     }
 
     pub fn swap_token(
@@ -62,7 +62,7 @@ pub mod swapverse {
             .swap_token(amount, min_amount_out, is_token_in_token_a)
     }
 
-    pub fn claim_profit(ctx: Context<ClaimProfit>, amount: u64) -> Result<()> {
-        ctx.accounts.claim_profit(amount)
+    pub fn claim_profit(ctx: Context<ClaimProfit>) -> Result<()> {
+        ctx.accounts.claim_profit()
     }
 }

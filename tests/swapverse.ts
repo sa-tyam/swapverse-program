@@ -674,9 +674,8 @@ describe("swapverse", () => {
   });
 
   it("claims profit", async () => {
-    let amount = new BN(5_000);
     let tx = await program.methods
-      .claimProfit(amount)
+      .claimProfit()
       .accounts({
         investor: investor1.publicKey,
         globalState: global_state,
@@ -699,34 +698,8 @@ describe("swapverse", () => {
       .rpc();
     console.log("Your transaction signature is ", tx);
 
-    amount = new BN(5_000);
-    let tx2 = await program.methods
-      .claimProfit(amount)
-      .accounts({
-        investor: investor1.publicKey,
-        globalState: global_state,
-        signingAuthority: signing_authority,
-        swapPool: swap_pool,
-        withdrawTokenMint: usdt_dev_mint,
-        tokenAMint: usdc_dev_mint,
-        tokenBMint: usdt_dev_mint,
-        swapPoolTreasuryTokenAAccount: swap_pool_treasury_token_a_ata,
-        swapPoolTreasuryTokenBAccount: swap_pool_treasury_token_b_ata,
-        investorTokenAccount: investor1_usdt_ata.address,
-        poolShareTokenMint: pool_share_token_b_mint,
-        investorPoolShareTokenAccount: investor1_pool_share_token_b_ata.address,
-        investorPoolInfo: investor1_pool_info,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      })
-      .signers([investor1])
-      .rpc();
-    console.log("Your transaction signature is ", tx2);
-
-    amount = new BN(5_000);
     let tx3 = await program.methods
-      .claimProfit(amount)
+      .claimProfit()
       .accounts({
         investor: investor2.publicKey,
         globalState: global_state,
@@ -748,31 +721,6 @@ describe("swapverse", () => {
       .signers([investor2])
       .rpc();
     console.log("Your transaction signature is ", tx3);
-
-    amount = new BN(700);
-    let tx4 = await program.methods
-      .claimProfit(amount)
-      .accounts({
-        investor: investor2.publicKey,
-        globalState: global_state,
-        signingAuthority: signing_authority,
-        swapPool: swap_pool,
-        withdrawTokenMint: usdt_dev_mint,
-        tokenAMint: usdc_dev_mint,
-        tokenBMint: usdt_dev_mint,
-        swapPoolTreasuryTokenAAccount: swap_pool_treasury_token_a_ata,
-        swapPoolTreasuryTokenBAccount: swap_pool_treasury_token_b_ata,
-        investorTokenAccount: investor2_usdt_ata.address,
-        poolShareTokenMint: pool_share_token_b_mint,
-        investorPoolShareTokenAccount: investor2_pool_share_token_b_ata.address,
-        investorPoolInfo: investor2_pool_info,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      })
-      .signers([investor2])
-      .rpc();
-    console.log("Your transaction signature is ", tx4);
   });
 
   // following lines should be added at the end of check_for_withdrawal_open function in withdraw_swap_pool.rs
@@ -781,22 +729,23 @@ describe("swapverse", () => {
   // self.swap_pool.open_for_withdrawal = true;
   // self.set_withdrawable_values();
   it.skip("withdraws from swap pool", async () => {
-    let amount = new BN(700);
     let tx = await program.methods
-      .withdrawSwapPool(amount)
+      .withdrawSwapPool(true)
       .accounts({
         investor: investor1.publicKey,
         globalState: global_state,
         signingAuthority: signing_authority,
         swapPool: swap_pool,
-        withdrawTokenMint: usdc_dev_mint,
         tokenAMint: usdc_dev_mint,
         tokenBMint: usdt_dev_mint,
         swapPoolTokenAAccount: swap_pool_usdc_ata,
         swapPoolTokenBAccount: swap_pool_usdt_ata,
-        investorTokenAccount: investor1_usdc_ata.address,
-        poolShareTokenMint: pool_share_token_a_mint,
-        investorPoolShareTokenAccount: investor1_pool_share_token_a_ata.address,
+        investorTokenAAccount: investor1_usdc_ata.address,
+        investorTokenBAccount: investor1_usdt_ata.address,
+        poolShareTokenAMint: pool_share_token_a_mint,
+        poolShareTokenBMint: pool_share_token_b_mint,
+        investorPoolShareTokenAAccount: investor1_pool_share_token_a_ata.address,
+        investorPoolShareTokenBAccount: investor1_pool_share_token_b_ata.address,
         investorPoolInfo: investor1_pool_info,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,

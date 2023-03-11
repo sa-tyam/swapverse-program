@@ -1,5 +1,3 @@
-use std::cmp::min;
-
 use crate::constants::*;
 use crate::error::SwapverseError;
 use crate::spl_token_utils::{signed_transfer_tokens};
@@ -106,7 +104,7 @@ pub struct ClaimProfit<'info> {
 }
 
 impl<'info> ClaimProfit<'info> {
-    pub fn claim_profit(&mut self, amount: u64) -> Result<()> {
+    pub fn claim_profit(&mut self) -> Result<()> {
 
         require!(self.swap_pool.activated_at != i64::MAX, SwapverseError::SwapPoolNotActivated);
 
@@ -134,13 +132,11 @@ impl<'info> ClaimProfit<'info> {
         let investor_share = all_investors_share_u128.checked_mul(investor_pool_share_amount as u128).unwrap()
                                         .checked_div(initial_token_amount as u128).unwrap() as u64;
 
-        let remaining_withdrawable_amount = if is_token_a {
+        let withdraw_amount = if is_token_a {
             investor_share.checked_sub(self.investor_pool_info.profit_for_token_a_withdrawn).unwrap()
         } else {
             investor_share.checked_sub(self.investor_pool_info.profit_for_token_b_withdrawn).unwrap()
         };
-
-        let withdraw_amount = min(amount, remaining_withdrawable_amount);
 
         require!(withdraw_amount > 0, SwapverseError::WithdrawAmountIsZero);
 
